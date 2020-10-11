@@ -1,0 +1,11 @@
+*.jpg
+
+.vscode
+
+output*
+test_inference*
+images*
+.ipynb_checkpoints
+wandb*
+
+*.pyc

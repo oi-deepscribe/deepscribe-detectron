@@ -1,0 +1,35 @@
+_BASE_: "Base-RCNN-FPN.yaml"
+OUTPUT_DIR: output-signs-100k-singlescale-128-fewerproposals
+MODEL:
+  WEIGHTS: None
+  MASK_ON: False
+  RPN:
+    NMS_THRESH: 0.2
+    POST_NMS_TOPK_TRAIN: 500
+    POST_NMS_TOPK_TEST: 250
+  RESNETS:
+    DEPTH: 50
+  ANCHOR_GENERATOR:
+    SIZES: [[128]]  # One size for each in feature map
+    ASPECT_RATIOS: [[0.5, 1.0, 2.0]]  # Three aspect ratios (same for all in feature maps)
+  ROI_HEADS:
+    BATCH_SIZE_PER_IMAGE: 512
+    NUM_CLASSES: 185
+    SCORE_THRESH_TEST: 0.05
+    NMS_THRESH_TEST: 0.2
+    POSITIVE_FRACTION: 0.25
+DATASETS:
+  TRAIN: ("signs_train",)
+  TEST: ("signs_test",)
+INPUT:
+  RANDOM_FLIP: "none"
+TEST: 
+  EVAL_PERIOD: 200
+  AUG:
+    FLIP: False
+DATALOADER:
+  NUM_WORKERS: 1
+SOLVER: 
+  IMS_PER_BATCH: 5
+  BASE_LR: 0.0003
+  MAX_ITER: 50000
