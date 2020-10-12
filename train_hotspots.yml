@@ -18,6 +18,8 @@ MODEL:
 DATASETS:
   TRAIN: ("hotspots_train",)
   TEST: ("hotspots_test",)
+INPUT:
+  RANDOM_FLIP: "none"
 TEST: 
   EVAL_PERIOD: 200
 DATALOADER:
