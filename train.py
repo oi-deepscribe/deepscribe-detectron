@@ -29,17 +29,7 @@ from detectron2.engine import (
     hooks,
     launch,
 )
-from detectron2.evaluation import (
-    CityscapesInstanceEvaluator,
-    CityscapesSemSegEvaluator,
-    COCOEvaluator,
-    COCOPanopticEvaluator,
-    DatasetEvaluators,
-    LVISEvaluator,
-    PascalVOCDetectionEvaluator,
-    SemSegEvaluator,
-    verify_results,
-)
+from detectron2.evaluation import COCOEvaluator, verify_results
 from detectron2.modeling import GeneralizedRCNNWithTTA
 import pfa
 
