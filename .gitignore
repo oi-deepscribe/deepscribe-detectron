@@ -9,3 +9,13 @@ images*
 wandb*
 
 *.pyc
+
+__pycache__
+
+*.tar.gz
+
+sign-detector/*
+
+archive/*
+
+data/*
