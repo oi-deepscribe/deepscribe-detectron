@@ -13,7 +13,7 @@ import functools
 
 def get_data(datapath: str, img_folder: str, hotspots_only: bool = True) -> dict:
     """
-    Loads a data JSON file from the provided path.
+   Loads a data JSON file from the provided path.
 
     Updates the dictionary with the full path to the image folder,
     and optionally removes class information to provide a "hotspot-only"
@@ -27,7 +27,7 @@ def get_data(datapath: str, img_folder: str, hotspots_only: bool = True) -> dict
         for example in dat:
             # update the image filepath with the correct folder location.
 
-            example["file_name"] = Path(img_folder) / Path(example["file_name"])
+            example["file_name"] = str(Path(img_folder) / Path(example["file_name"]))
 
             # correctly annotate the bounding box format
             for hotspot in example["annotations"]:

@@ -1,22 +1,43 @@
-# Deepscribe - Detectron2 
+# Deepscribe - Sign Detection 
 
-Early experiments using the FAIR Detectron2 library for object detection. The library works very well with minimal configuration, but adding modified metrics (top-k precision, recall, and accuracy in our case) proved to be difficult due to the internal detection API. Currently experimenting with a RetinaNet based SSD here: https://github.com/oi-deepscribe/deepscribe-detect. 
+Repo containing config files and training scripts for a sign detector based on a Faster-RCNN object detector. 
 
-In the meantime, this may be useful for performing sign-only detection.
+# data
 
-# Setup
+Unpack the data archive into this directory. The archive contains: 
 
-Install conda env with `conda env create -f environment.yml`. 
+data/
++-- hotspots
+|   +-- train
+|   |   +-- UUID_ind_cls.jpg
+|   +-- test
+|   +-- val
++-- images_annotated
+|   +-- UUID.jpg
++-- images_cropped
+|   +-- UUID.jpg
++-- hotspots_all.json
++-- hotspots_test_coco.json
++-- hotspots_test.json
++-- hotspots_train_coco.json
++-- hotspots_train.json
++-- hotspots_val_coco.json
++-- hotspots_val.json
++-- signs.txt
 
 
-# Preprocessing 
+# config files
 
-The data was preprocessed from the raw hotspots using the notebooks `reformat.ipynb` and `crop.ipynb`. The former converts the hotspots to the Detectron2 dataset format, and the latter crops images such that unlabeled regions of the image are removed. 
+The config files in `configs` are standard Detectron2 train/test configuration files. More information here: https://detectron2.readthedocs.io/tutorials/configs.html
 
-# Datasets
+Of particular interest are the test NMS and score threshold parameters - feel free to play with those to change results at inference time.
 
-`pfa.py` defines two sets of data: one where each sign is given its own category, and another where they're all lumped into one "sign" category. 
+# training
 
-# Training
+The script `train.sh` contains an example using the script `dsdetectron/train.py`, a modification of the default Detectron2 training script. 
 
-Pretty much just the default detectron2 train API - the train.py script was copied from the official detectron2 repo. 
+# example inference scripts
+
+The scripts `dsdetectron/visualize.py` and `dsdetectron/groundtruth.py` contain examples of using trained models in inference. `dsdetectron/visualize.py` takes a tablet as input and returns an annotated image with predicted boxes drawn and a `.npz` archive containing confidence scores and individual hotspot images. 
+
+`dsdetectron/groundtruth.py` contains an example of producing predicted hotspots as well as approximate ground-truth labels using the complete sign list. This script loads a single example from the complete validation data, runs inference from a trained model, then extracts hotspot images as well as predicted ground-truth labels from the ground-truth hotspots. This script uses functions defined in `dsdetectron/inferenceutils.py` to align the predicted boxes with ground-truth boxes. If a box cannot be aligned, its predicted label will be "-1". 

@@ -6,9 +6,6 @@ import numpy as np
 def get_hotspots(
     image: np.ndarray,
     boxes: Boxes,
-    matcher: Matcher = None,
-    gt_boxes: Boxes = None,
-    gt_classes: np.ndarray = None,
 ):
     # extracts invididual hotspot instances from predicted regions.
     # optionally, aligns them to existing gt and produce groundtruth classes
@@ -23,8 +20,15 @@ def get_hotspots(
         hotspot = image[bbox[1] : bbox[3], bbox[0] : bbox[2]]
         hotspots.append(hotspot)
 
-    if gt_boxes is None:
-        return hotspots
+    return hotspots
+
+
+def get_gt_classes(
+    boxes: Boxes,
+    matcher: Matcher,
+    gt_boxes: Boxes,
+    gt_classes: np.ndarray,
+):
 
     match_quality_matrix = pairwise_iou(gt_boxes, boxes)
     matched_idxs, matched_labels = matcher(match_quality_matrix)
@@ -34,4 +38,4 @@ def get_hotspots(
     # handle background classes
     aligned_classes[matched_labels == 0] = -1
 
-    return hotspots, aligned_classes
+    return aligned_classes

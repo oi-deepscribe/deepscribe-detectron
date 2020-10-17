@@ -27,7 +27,7 @@ def main(args):
     cfg = get_cfg()
     cfg.merge_from_file(args.cfg)
     # update the model so that it uses the final output weights.
-    cfg.MODEL.WEIGHTS = Path(cfg.OUTPUT_DIR) / Path("model_final.pth")
+    cfg.MODEL.WEIGHTS = str(Path(cfg.OUTPUT_DIR) / Path("model_final.pth"))
 
     predictor = DefaultPredictor(cfg)
 
@@ -39,24 +39,24 @@ def main(args):
     # the -1 at the end reverses the color order from BGR (openCV standard) to RGB (normal standard)
     v = Visualizer(
         img[:, :, ::-1],
-        metadata={"thing_classes": "hotspot"},
+        metadata={"thing_classes": ["hotspot"]},
         scale=0.5,
     )
 
     out = v.draw_instance_predictions(outputs["instances"].to("cpu"))
 
     cv2.imwrite(
-        Path(args.out).with_suffix(".jpg"),
+        str(Path(args.outpath).with_suffix(".jpg")),
         out.get_image()[:, :, ::-1],
     )
 
     # gets individual hotspot images, save to npz array
 
-    hotspots = get_hotspots(img, outputs["instances"].to("cpu").pred_boxes)
+    hotspots = get_hotspots(img[:, :, ::-1], outputs["instances"].to("cpu").pred_boxes)
     # get scores
     scores = outputs["instances"].to("cpu").scores
 
-    np.savez(Path(args.out).with_suffix(".jpg"), hotspots=hotspots, scores=scores)
+    np.savez(Path(args.outpath).with_suffix(".npz"), hotspots=hotspots, scores=scores)
 
 
 if __name__ == "__main__":
