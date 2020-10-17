@@ -19,3 +19,5 @@ sign-detector/*
 archive/*
 
 data/*
+
+*.npz

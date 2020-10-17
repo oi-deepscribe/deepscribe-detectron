@@ -5,11 +5,11 @@ Repo containing config files and training scripts for a sign detector based on a
 # data
 
 Unpack the data archive into this directory. The archive contains: 
-
+```
 data/
 +-- hotspots
 |   +-- train
-|   |   +-- UUID_ind_cls.jpg
+|   |   +-- UUID_index_class.jpg
 |   +-- test
 |   +-- val
 +-- images_annotated
@@ -24,7 +24,9 @@ data/
 +-- hotspots_val_coco.json
 +-- hotspots_val.json
 +-- signs.txt
+```
 
+This archive must be in the current working directory for the data set registration functions in `dsdetectron/pfa.py` to work properly. 
 
 # config files
 
