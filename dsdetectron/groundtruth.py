@@ -1,25 +1,27 @@
-from detectron2.engine import DefaultPredictor
-from detectron2.config import get_cfg
-from detectron2.utils.visualizer import Visualizer
-from detectron2.data import MetadataCatalog, DatasetCatalog
-from detectron2.modeling.matcher import Matcher
-from detectron2.structures import Boxes
-import torch
-from pathlib import Path
-import cv2
 from argparse import ArgumentParser
+from pathlib import Path
 from sys import argv
 
+import cv2
 import numpy as np
+import torch
+from tqdm import tqdm
+from detectron2.config import get_cfg
+from detectron2.data import DatasetCatalog, MetadataCatalog
+from detectron2.engine import DefaultPredictor
+from detectron2.modeling.matcher import Matcher
+from detectron2.structures import Boxes
+from detectron2.utils.visualizer import Visualizer
 
 # register datasets
 import pfa
-from inferenceutils import get_hotspots, get_gt_classes
+from inferenceutils import get_gt_classes, get_hotspots
 
 
 def parse(args):
     parser = ArgumentParser()
     parser.add_argument("--cfg", help="Detectron2 config file.")
+    parser.add_argument("--dataset", help="dataset on which to perform inference")
     parser.add_argument("--outpath", help="Output path. ")
     return parser.parse_args(args)
 
@@ -36,47 +38,59 @@ def main(args):
     # load image.
 
     # get data from validation data
-    # neeg to get data from the signs dataset, not the hotspots dataset.
-    example_data = DatasetCatalog.get("signs_val")[0]
+    # need to get data from the signs dataset, not the hotspots dataset.
+    dset = DatasetCatalog.get(args.dataset)
 
-    img = cv2.imread(example_data["file_name"])
-    # # format is documented at https://detectron2.readthedocs.io/tutorials/models.html#model-output-format
-    outputs = predictor(img)
+    all_hotspots = []
+    all_gt_aligned = []
+    all_scores = []
 
-    # gets individual hotspot images, save to npz array
+    for example in tqdm(dset):
 
-    hotspots = get_hotspots(img[:, :, ::-1], outputs["instances"].to("cpu").pred_boxes)
-    # get scores
-    scores = outputs["instances"].to("cpu").scores
+        img = cv2.imread(example["file_name"])
+        # # format is documented at https://detectron2.readthedocs.io/tutorials/models.html#model-output-format
+        outputs = predictor(img)
 
-    # get groundtruth classes
+        # gets individual hotspot images, save to npz array
 
-    # make Matcher object
-    # these parameters can be customized.
-    matcher = Matcher([0.3, 0.7], [0, -1, 1], allow_low_quality_matches=False)
+        hotspots = get_hotspots(
+            img[:, :, ::-1], outputs["instances"].to("cpu").pred_boxes
+        )
+        all_hotspots.extend(hotspots)
 
-    # convert the groundtruth annotations into a detectron Boxes object
-    gt_boxes = Boxes(
-        torch.tensor(
-            np.vstack(
-                [annotation["bbox"] for annotation in example_data["annotations"]]
+        # get scores
+        scores = outputs["instances"].to("cpu").scores
+
+        all_scores.extend(scores.numpy())
+
+        # get groundtruth classes
+
+        # make Matcher object
+        # these parameters can be customized.
+        matcher = Matcher([0.3, 0.7], [0, -1, 1], allow_low_quality_matches=False)
+
+        # convert the groundtruth annotations into a detectron Boxes object
+        gt_boxes = Boxes(
+            torch.tensor(
+                np.vstack([annotation["bbox"] for annotation in example["annotations"]])
             )
         )
-    )
 
-    gt_classes = np.array(
-        [annotation["category_id"] for annotation in example_data["annotations"]]
-    )
+        gt_classes = np.array(
+            [annotation["category_id"] for annotation in example["annotations"]]
+        )
 
-    aligned_classes = get_gt_classes(
-        outputs["instances"].to("cpu").pred_boxes, matcher, gt_boxes, gt_classes
-    )
+        aligned_classes = get_gt_classes(
+            outputs["instances"].to("cpu").pred_boxes, matcher, gt_boxes, gt_classes
+        )
+
+        all_gt_aligned.extend(aligned_classes)
 
     np.savez(
         Path(args.outpath).with_suffix(".npz"),
-        hotspots=hotspots,
-        scores=scores,
-        gt_classes=aligned_classes,
+        hotspots=np.array(all_hotspots, dtype=object),
+        scores=all_scores,
+        gt_classes=all_gt_aligned,
     )
 
 

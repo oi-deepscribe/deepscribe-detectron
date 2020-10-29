@@ -35,7 +35,12 @@ def get_gt_classes(
 
     # compute ground-truth classes for every box
     aligned_classes = gt_classes[matched_idxs]
-    # handle background classes
+
+    # handle edge case where only one aligned box shows up
+    if not isinstance(aligned_classes, np.ndarray):
+        aligned_classes = np.ndarray([aligned_classes])
+
+    # handle background classes:
     aligned_classes[matched_labels == 0] = -1
 
     return aligned_classes
