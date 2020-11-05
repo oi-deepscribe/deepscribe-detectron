@@ -20,6 +20,7 @@ archive/*
 
 data/*
 
-sign-detector-*/
+traindirs/
+raw_ochre/
 
 *.npz

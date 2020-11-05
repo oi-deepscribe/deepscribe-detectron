@@ -180,14 +180,22 @@ def do_train(cfg, model, resume=False, patience=20):
                 if test_results["bbox"]["AP50"] > best_ap50:
                     best_ap50 = test_results["bbox"]["AP50"]
                     best_iteration = iteration
+                    # reset patience counter
+                    patience_counter = 0
+                    logger.info(f"Patience counter reset.")
                 else:
                     patience_counter += 1
+                    logger.info(
+                        f"Patience counter increased to {patience_counter}, will be terminated at {patience}"
+                    )
                     if patience_counter > patience:
                         for writer in writers:
                             writer.write()
                         # restore to best checkpoint
 
-                        checkpointer.load(f"model_{best_iteration}")
+                        checkpointer.load(
+                            f"{cfg.OUTPUT_DIR}/model_{best_iteration}.pth"
+                        )
 
                         break
                 # Compared to "train_net.py", the test results are not dumped to EventStorage

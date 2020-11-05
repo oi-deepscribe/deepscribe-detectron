@@ -1,5 +1,5 @@
 _BASE_: "Base-RCNN-FPN.yaml"
-OUTPUT_DIR: sign-detector-shallow-scheduler
+OUTPUT_DIR: sign-detector-shallow-earlystop2
 MODEL:
   WEIGHTS: None
   MASK_ON: False
@@ -28,5 +28,5 @@ DATALOADER:
 SOLVER: 
   IMS_PER_BATCH: 15
   BASE_LR: 0.003
-  STEPS: ()
-  MAX_ITER: 100000
+  STEPS: (10000, 20000)
+  MAX_ITER: 30000

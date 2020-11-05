@@ -13,11 +13,11 @@ import functools
 
 def get_data(datapath: str, img_folder: str, hotspots_only: bool = True) -> dict:
     """
-   Loads a data JSON file from the provided path.
+    Loads a data JSON file from the provided path.
 
-    Updates the dictionary with the full path to the image folder,
-    and optionally removes class information to provide a "hotspot-only"
-    detection dataset.
+     Updates the dictionary with the full path to the image folder,
+     and optionally removes class information to provide a "hotspot-only"
+     detection dataset.
 
     """
 
@@ -42,7 +42,6 @@ def get_data(datapath: str, img_folder: str, hotspots_only: bool = True) -> dict
 # load sign list.
 with open("data/signs.txt", "r") as sgns:
     signs = [sign.strip() for sign in sgns.readlines()]
-
 
 # register everything in the Detectron2 DatasetCatalog and MetadataCatalog.
 DatasetCatalog.register(
@@ -91,3 +90,73 @@ DatasetCatalog.register(
 MetadataCatalog.get("hotspots_train").set(thing_classes=["hotspot"])
 MetadataCatalog.get("hotspots_test").set(thing_classes=["hotspot"])
 MetadataCatalog.get("hotspots_val").set(thing_classes=["hotspot"])
+
+# register dataset for nov_2020 set.
+
+# load sign list.
+with open("data_nov_2020/signs_nov_2020.txt", "r") as sgns:
+    signs_new = [sign.strip() for sign in sgns.readlines()]
+
+DatasetCatalog.register(
+    "signs_new_train",
+    functools.partial(
+        get_data,
+        "data_nov_2020/hotspots_train.json",
+        "data_nov_2020/images_cropped",
+        hotspots_only=False,
+    ),
+)
+DatasetCatalog.register(
+    "signs_new_val",
+    functools.partial(
+        get_data,
+        "data_nov_2020/hotspots_val.json",
+        "data_nov_2020/images_cropped",
+        hotspots_only=False,
+    ),
+)
+DatasetCatalog.register(
+    "signs_new_test",
+    functools.partial(
+        get_data,
+        "data_nov_2020/hotspots_test.json",
+        "data_nov_2020/images_cropped",
+        hotspots_only=False,
+    ),
+)
+MetadataCatalog.get("signs_new_train").set(thing_classes=signs_new)
+MetadataCatalog.get("signs_new_test").set(thing_classes=signs_new)
+MetadataCatalog.get("signs_new_val").set(thing_classes=signs_new)
+
+# hotspot only dataset
+
+DatasetCatalog.register(
+    "hotspots_new_train",
+    functools.partial(
+        get_data,
+        "data_nov_2020/hotspots_train.json",
+        "data_nov_2020/images_cropped",
+        hotspots_only=True,
+    ),
+)
+DatasetCatalog.register(
+    "hotspots_new_val",
+    functools.partial(
+        get_data,
+        "data_nov_2020/hotspots_val.json",
+        "data_nov_2020/images_cropped",
+        hotspots_only=True,
+    ),
+)
+DatasetCatalog.register(
+    "hotspots_new_test",
+    functools.partial(
+        get_data,
+        "data_nov_2020/hotspots_test.json",
+        "data_nov_2020/images_cropped",
+        hotspots_only=True,
+    ),
+)
+MetadataCatalog.get("hotspots_new_train").set(thing_classes=["hotspot"])
+MetadataCatalog.get("hotspots_new_test").set(thing_classes=["hotspot"])
+MetadataCatalog.get("hotspots_new_val").set(thing_classes=["hotspot"])
