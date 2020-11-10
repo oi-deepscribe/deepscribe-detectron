@@ -15,6 +15,7 @@ __pycache__
 *.tar.gz
 
 sign-detector/*
+sign-detector-*
 
 archive/*
 

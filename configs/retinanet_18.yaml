@@ -1,11 +1,12 @@
-OUTPUT_DIR: sign-detector-retinanet
+OUTPUT_DIR: sign-detector-retinanet-beta-earlystop2
 MODEL:
   META_ARCHITECTURE: "RetinaNet"
   BACKBONE:
     NAME: "build_retinanet_resnet_fpn_backbone"
   RESNETS:
     OUT_FEATURES: ["res3", "res4", "res5"]
-    DEPTH: 50
+    DEPTH: 18
+    RES2_OUT_CHANNELS: 64
   ANCHOR_GENERATOR:
     SIZES: !!python/object/apply:eval ["[[x, x * 2**(1.0/3), x * 2**(2.0/3) ] for x in [32, 64, 128, 256, 512 ]]"]
   FPN:
@@ -15,14 +16,15 @@ MODEL:
     IOU_LABELS: [0, -1, 1]
     SMOOTH_L1_LOSS_BETA: 0.1
 DATASETS:
-  TRAIN: ("hotspots_train",)
-  TEST: ("hotspots_val",)
+  TRAIN: ("hotspots_new_train",)
+  TEST: ("hotspots_new_val",)
 TEST: 
-  EVAL_PERIOD: 500
+  EVAL_PERIOD: 100
 SOLVER:
-  IMS_PER_BATCH: 12
-  BASE_LR: 0.00001 
-  MAX_ITER: 90000
+  IMS_PER_BATCH: 10
+  BASE_LR: 0.001
+  STEPS: (25000, 35000)
+  MAX_ITER: 40000
 INPUT:
   MIN_SIZE_TRAIN: (640, 672, 704, 736, 768, 800)
   RANDOM_FLIP: "none"
