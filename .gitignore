@@ -8,6 +8,9 @@ images*
 .ipynb_checkpoints
 wandb*
 
+lightning_logs/*
+
+deepscribe-torch/*
 *.pyc
 
 __pycache__

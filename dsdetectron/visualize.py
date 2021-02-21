@@ -11,7 +11,8 @@ import numpy as np
 
 # register datasets
 import pfa
-from inferenceutils import get_hotspots
+
+# from inferenceutils import get_hotspots
 
 
 def parse(args):
@@ -50,13 +51,13 @@ def main(args):
         out.get_image()[:, :, ::-1],
     )
 
-    # gets individual hotspot images, save to npz array
+    # # gets individual hotspot images, save to npz array
 
-    hotspots = get_hotspots(img[:, :, ::-1], outputs["instances"].to("cpu").pred_boxes)
-    # get scores
-    scores = outputs["instances"].to("cpu").scores
+    # hotspots = get_hotspots(img[:, :, ::-1], outputs["instances"].to("cpu").pred_boxes)
+    # # get scores
+    # scores = outputs["instances"].to("cpu").scores
 
-    np.savez(Path(args.outpath).with_suffix(".npz"), hotspots=hotspots, scores=scores)
+    # np.savez(Path(args.outpath).with_suffix(".npz"), hotspots=hotspots, scores=scores)
 
 
 if __name__ == "__main__":

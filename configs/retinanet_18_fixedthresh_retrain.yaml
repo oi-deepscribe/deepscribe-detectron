@@ -1,0 +1,35 @@
+OUTPUT_DIR: sign-detector-retinanet-fixedthresh2
+MODEL:
+  META_ARCHITECTURE: "RetinaNet"
+  BACKBONE:
+    NAME: "build_retinanet_resnet_fpn_backbone"
+  RESNETS:
+    OUT_FEATURES: ["res3", "res4", "res5"]
+    DEPTH: 18
+    RES2_OUT_CHANNELS: 64
+  ANCHOR_GENERATOR:
+    SIZES: !!python/object/apply:eval ["[[x, x * 2**(1.0/3), x * 2**(2.0/3) ] for x in [32, 64, 128, 256, 512 ]]"]
+  FPN:
+    IN_FEATURES: ["res3", "res4", "res5"]
+  RETINANET:
+    IOU_THRESHOLDS: [0.4, 0.5]
+    IOU_LABELS: [0, -1, 1]
+    SMOOTH_L1_LOSS_BETA: 0.1
+    TOPK_CANDIDATES_TEST: 2000
+    SCORE_THRESH_TEST: 0.3
+    NMS_THRESH_TEST: 0.2
+    NUM_CONVS: 4
+DATASETS:
+  TRAIN: ("hotspots_new_train",)
+  TEST: ("hotspots_new_val",)
+TEST: 
+  EVAL_PERIOD: 100
+SOLVER:
+  IMS_PER_BATCH: 10
+  BASE_LR: 0.001
+  STEPS: (22000, 28000)
+  MAX_ITER: 40000
+INPUT:
+  MIN_SIZE_TRAIN: (640, 672, 704, 736, 768, 800)
+  RANDOM_FLIP: "none"
+VERSION: 2

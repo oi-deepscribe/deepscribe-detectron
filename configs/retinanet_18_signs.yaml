@@ -1,0 +1,34 @@
+OUTPUT_DIR: sign-detector-retinanet-signs
+MODEL:
+  META_ARCHITECTURE: "RetinaNet"
+  BACKBONE:
+    NAME: "build_retinanet_resnet_fpn_backbone"
+  RESNETS:
+    OUT_FEATURES: ["res3", "res4", "res5"]
+    DEPTH: 18
+    RES2_OUT_CHANNELS: 64
+  ANCHOR_GENERATOR:
+    SIZES: !!python/object/apply:eval ["[[x, x * 2**(1.0/3), x * 2**(2.0/3) ] for x in [32, 64, 128, 256, 512 ]]"]
+  FPN:
+    IN_FEATURES: ["res3", "res4", "res5"]
+  RETINANET:
+    IOU_THRESHOLDS: [0.4, 0.5]
+    IOU_LABELS: [0, -1, 1]
+    SMOOTH_L1_LOSS_BETA: 0.1
+    TOPK_CANDIDATES_TEST: 200
+    NMS_THRESH_TEST: 0.5
+    NUM_CONVS: 4
+DATASETS:
+  TRAIN: ("signs_new_train",)
+  TEST: ("signs_new_val",)
+TEST: 
+  EVAL_PERIOD: 100
+SOLVER:
+  IMS_PER_BATCH: 10
+  BASE_LR: 0.001
+  STEPS: (25000, 35000)
+  MAX_ITER: 40000
+INPUT:
+  MIN_SIZE_TRAIN: (640, 672, 704, 736, 768, 800)
+  RANDOM_FLIP: "none"
+VERSION: 2

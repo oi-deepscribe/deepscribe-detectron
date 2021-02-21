@@ -3,6 +3,7 @@ from detectron2.structures import BoxMode
 from detectron2.data import MetadataCatalog, DatasetCatalog
 from pathlib import Path
 import functools
+import pandas as pd
 
 # data loading functions. These require the data archive to be unpacked in a
 # folder called "data" in the current working directory.
@@ -82,7 +83,7 @@ DatasetCatalog.register(
     ),
 )
 DatasetCatalog.register(
-    "hotspots_time",
+    "hotspots_tests",
     functools.partial(
         get_data, "data/hotspots_test.json", "data/images_cropped", hotspots_only=True
     ),
@@ -94,8 +95,10 @@ MetadataCatalog.get("hotspots_val").set(thing_classes=["hotspot"])
 # register dataset for nov_2020 set.
 
 # load sign list.
-with open("data_nov_2020/signs_nov_2020.txt", "r") as sgns:
-    signs_new = [sign.strip() for sign in sgns.readlines()]
+signs_df = pd.read_csv("data_nov_2020/signs_nov_2020.csv")
+
+signs_new = list(signs_df["sign"])
+
 
 DatasetCatalog.register(
     "signs_new_train",

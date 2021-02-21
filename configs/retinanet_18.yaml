@@ -1,4 +1,4 @@
-OUTPUT_DIR: sign-detector-retinanet-beta-earlystop2
+OUTPUT_DIR: sign-detector-retinanet-final
 MODEL:
   META_ARCHITECTURE: "RetinaNet"
   BACKBONE:
@@ -15,6 +15,10 @@ MODEL:
     IOU_THRESHOLDS: [0.4, 0.5]
     IOU_LABELS: [0, -1, 1]
     SMOOTH_L1_LOSS_BETA: 0.1
+    TOPK_CANDIDATES_TEST: 2000
+    SCORE_THRESH_TEST: 0.3
+    NMS_THRESH_TEST: 0.2
+    NUM_CONVS: 4
 DATASETS:
   TRAIN: ("hotspots_new_train",)
   TEST: ("hotspots_new_val",)

@@ -207,6 +207,7 @@ def do_train(cfg, model, resume=False, patience=20):
                 for writer in writers:
                     writer.write()
             # periodic_checkpointer.step(iteration)
+        checkpointer.save(f"model_final")
 
 
 def setup(args):
